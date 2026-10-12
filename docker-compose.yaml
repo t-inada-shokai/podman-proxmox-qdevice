@@ -1,0 +1,17 @@
+services:
+  qnetd:
+    build:
+      context: .
+      dockerfile: Containerfile
+    image: localhost/qnetd:latest
+    container_name: qnetd
+    # クラスタノードの送信元IPをそのまま見せるため host ネットワークを使用
+    network_mode: host
+    restart: always
+    volumes:
+      # NSS証明書DBをボリュームで永続化
+      - qnetd-data:/etc/corosync/qnetd:Z
+
+volumes:
+  qnetd-data:
+    name: qnetd-data
