@@ -29,7 +29,7 @@ Proxmox 標準の自動セットアップコマンド (`pvecm qdevice setup`) �
 
 1. 本リポジトリを一般ユーザーのホームディレクトリにクローンし、コンテナを起動します。
    ```bash
-   git clone https://github.com
+   git clone https://github.com/t-inada-shokai/podman-proxmox-qdevice.git
    cd podman-proxmox-qdevice
    podman compose up -d --build
    ```
