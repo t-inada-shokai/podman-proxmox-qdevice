@@ -8,9 +8,6 @@ RUN apt-get update \
 # SSH用のランタイムディレクトリを作成
 RUN mkdir -p /var/run/sshd
 
-# root ユーザーの仮パスワードを設定 (pvecmのssh-copy-id一時認証用)
-RUN echo 'root:rootless_qdevice_pass' | chpasswd
-
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 0755 /entrypoint.sh
 
