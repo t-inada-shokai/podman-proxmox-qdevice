@@ -77,6 +77,7 @@ OLD_DIGEST="$(cat "$DIGEST_FILE" 2>/dev/null || true)"
 
 if [ "$FORCE" = 0 ] && [ -f "$BACKUP_FILE" ] && [ "$NEW_DIGEST" = "$OLD_DIGEST" ]; then
   echo "前回のバックアップから内容の変更はありません。何もしません。"
+  [ "$COMMIT" = 1 ] && echo "(未コミットの場合は --force --commit で実行してください)"
   exit 0
 fi
 

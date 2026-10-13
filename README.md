@@ -87,11 +87,15 @@ mkdir -p ~/.config/age
 age-keygen -o ~/.config/age/qnetd.key
 age-keygen -y ~/.config/age/qnetd.key > recipients.txt
 
-# 初回のみ: 非公開リポジトリを clone しておく(既定の保存先は ~/qnetd-backup)
-git clone <非公開リポジトリのURL> ~/qnetd-backup
+# 初回のみ: 空の非公開リポジトリを作り ~/qnetd-backup に紐付ける
+# cd ~/qnetd-backup
+git init -b main ~/qnetd-backup
+git -C ~/qnetd-backup remote add origin <非公開リポジトリのURL>
+# (中身のある非公開リポジトリを使う場合は、上2行の代わりに次の行を#を外して実行してください)
+# git clone <非公開リポジトリのURL> ~/qnetd-backup
 
-# バックアップ
-./backup-nssdb.sh --commit && git -C ~/qnetd-backup push
+# バックアップ(初回のみ push -u origin main、、2回目以降は git push でよい)
+./backup-nssdb.sh --commit && git -C ~/qnetd-backup push -u origin main
 ```
 
 復元は `./restore-nssdb.sh --up` です(`~/.config/age/qnetd.key` が必要です)。
