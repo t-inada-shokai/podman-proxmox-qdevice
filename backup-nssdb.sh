@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# qnetd-data ボリューム(nssdb)を export し、age で暗号化して backup/ に保存する。
+# qnetd-data ボリューム(nssdb)を export し、age で暗号化して 非公開リポジトリに保存する。
 # 平文のtarは tmpfs 上(XDG_RUNTIME_DIR)にだけ置き、終了時に削除する。
 set -euo pipefail
 
@@ -34,6 +34,17 @@ while [ $# -gt 0 ]; do
 done
 
 need podman age tar sha256sum find sort xargs
+
+# 保存先が、このスクリプトのある(公開)リポジトリと同じなら中止する
+SELF_TOP="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+BACKUP_TOP="$(git -C "$(dirname "$BACKUP_FILE")" rev-parse --show-toplevel 2>/dev/null || true)"
+if [ "$COMMIT" = 1 ]; then
+  [ -n "$BACKUP_TOP" ] || die "$(dirname "$BACKUP_FILE") はgitリポジトリではありません。非公開リポジトリをcloneしてください"
+fi
+if [ -n "$BACKUP_TOP" ] && [ "$BACKUP_TOP" = "$SELF_TOP" ]; then
+  die "保存先が公開リポジトリ($SELF_TOP)と同じです。BACKUP_DIR を別の非公開リポジトリにしてください"
+fi
+
 [ -f "$RECIPIENTS" ] || die "$RECIPIENTS がありません。age の公開鍵を書いてください (README参照)"
 podman volume exists "$VOLUME" || die "ボリューム $VOLUME が存在しません"
 
@@ -79,9 +90,9 @@ echo "--- 含まれるファイル(先頭20件) ---"
 head -n 20 "$WORK/list.txt"
 
 if [ "$COMMIT" = 1 ]; then
-  git add "$BACKUP_FILE" "$DIGEST_FILE"
-  git commit -m "backup: qnetd-data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  echo "コミットしました。git push を忘れずに実行してください。"
+  git -C "$BACKUP_TOP" add -- "$(realpath "$BACKUP_FILE")" "$(realpath "$DIGEST_FILE")"
+  git -C "$BACKUP_TOP" commit -m "backup: qnetd-data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "コミットしました。非公開リポジトリへ push してください: git -C $BACKUP_TOP push"
 else
   echo "git add / commit / push を実行してください (--commit でコミットまで自動化できます)"
 fi

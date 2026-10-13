@@ -3,8 +3,10 @@
 
 VOLUME="${VOLUME:-qnetd-data}"
 CONTAINER="${CONTAINER:-qnetd}"
-BACKUP_FILE="${BACKUP_FILE:-backup/qnetd-data.tar.age}"
-DIGEST_FILE="${DIGEST_FILE:-backup/qnetd-data.content.sha256}"
+# バックアップは公開リポジトリではなく、別の非公開Gitリポジトリのクローンに保存する
+BACKUP_DIR="${BACKUP_DIR:-$HOME/qnetd-backup}"
+BACKUP_FILE="${BACKUP_FILE:-$BACKUP_DIR/qnetd-data.tar.age}"
+DIGEST_FILE="${DIGEST_FILE:-$BACKUP_DIR/qnetd-data.content.sha256}"
 
 die() {
   echo "エラー: $*" >&2

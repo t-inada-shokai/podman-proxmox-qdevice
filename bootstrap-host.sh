@@ -66,24 +66,10 @@ else
   exit 1
 fi
 
-# 引数に --start-ssh が指定された場合、10分限定でSSHDを起動する
+# 引数に --start-ssh が指定された場合、認証待ち受けを開始する
 if [ "${1:-}" = "--start-ssh" ]; then
-    CONTAINER_NAME="qnetd"
-    TIMEOUT_MINUTES=10
-
-    echo "[+] コンテナ '${CONTAINER_NAME}' 内で SSHD (Port 2222) を一時起動します..."
-    podman exec -d "${CONTAINER_NAME}" /usr/sbin/sshd
-
-    echo "[+] SSHD が起動しました。PVE側から pvecm セットアップを実行してください。"
-    echo "[!] セキュリティのため、${TIMEOUT_MINUTES}分後にポート2222(SSHD)は自動閉鎖されます。"
-
-    (
-        sleep "$((TIMEOUT_MINUTES * 60))"
-        echo -e "\n[!] 10分が経過しました。安全のためSSHDを自動閉鎖します。"
-        podman exec "${CONTAINER_NAME}" pkill sshd || true
-    ) &
-    exit 0
+    exec "$(dirname "$0")/start-auth-wait.sh"
 fi
 
 echo "使い方: $0 [--start-ssh]"
-echo "  --start-ssh  PVEセットアップ用に10分間だけコンテナのSSHDを起動します"
+echo "  --start-ssh  ホスト確認後、PVEセットアップ用の認証待ち受けを開始します(start-auth-wait.sh を呼び出し)"

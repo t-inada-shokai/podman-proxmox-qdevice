@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# backup/qnetd-data.tar.age を復号し、podman ボリュームに import する。
+# 非公開リポジトリのqnetd-data.tar.age を復号し、podman ボリュームに import する。
 # age の秘密鍵はリポジトリに入れない。既定は ~/.config/age/qnetd.key (AGE_IDENTITY で変更可)。
 set -euo pipefail
 

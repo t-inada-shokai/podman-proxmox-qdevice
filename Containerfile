@@ -1,4 +1,4 @@
-FROM docker.io/library/debian:12-slim
+FROM docker.io/library/debian:trixie-slim
 
 # corosync-qnetdに加えて、一時的な接続用のopenssh-serverをインストール
 RUN apt-get update \
